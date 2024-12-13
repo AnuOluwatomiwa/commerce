@@ -1,0 +1,61 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ listing.title }}
+{% endblock %}
+
+{% block body %}
+    <h2>{{ listing.title }}</h2>
+    <p>{{ listing.description }}</p>
+    <p>Current Price: ${{ listing.current_bid }}</p>
+    <p>Category: {{ listing.category }}</p>
+    {% if listing.image_url %}
+        <img src="{{ listing.image_url }}" alt="Image for {{ listing.title }}">
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <form method="post">
+            {% csrf_token %}
+            {% if is_watchlisted %}
+                <button type="submit" name="watchlist">Remove from Watchlist</button>
+            {% else %}
+                <button type="submit" name="watchlist">Add to Watchlist</button>
+            {% endif %}
+        </form>
+
+        {% if listing.is_active %}
+            <form method="post">
+                {% csrf_token %}
+                <label for="bid">Place Bid:</label>
+                <input type="number" name="bid" step="0.01" min="{{ listing.current_bid|add:0.01 }}" required>
+                <button type="submit">Submit Bid</button>
+            </form>
+        {% else %}
+            <p>Auction Closed</p>
+            {% if user == listing.highest_bidder %}
+                <p>Congratulations, you won this auction!</p>
+            {% endif %}
+        {% endif %}
+
+        {% if user == listing.user and listing.is_active %}
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="close">Close Auction</button>
+            </form>
+        {% endif %}
+
+        <h3>Comments:</h3>
+        <ul>
+            {% for comment in comments %}
+                <li><strong>{{ comment.user.username }}</strong>: {{ comment.content }}</li>
+            {% endfor %}
+        </ul>
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="comment" placeholder="Add a comment"></textarea>
+            <button type="submit">Comment</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to participate in this auction.</p>
+    {% endif %}
+{% endblock %}
