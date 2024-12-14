@@ -7,6 +7,19 @@ from django.urls import reverse
 
 from .models import User, ListingForm, AuctionListings, Bids, Comments
 
+def categories(request):
+    categories = AuctionListings.objects.values_list('category', flat=True).distinct()#As seen in python documentation
+    return render(request, "auctions/categories.html", {
+        "categories": categories
+    })
+
+def category_listings(request, category_name):
+    listings = AuctionListings.objects.filter(category=category_name, is_active=True)
+    return render(request, "auctions/category_listings.html", {
+        "category_name": category_name,
+        "listings": listings
+    })
+    
 def watchlist(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
