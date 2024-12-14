@@ -11,10 +11,10 @@
             {% for listing in watchlist %}
                 <div>
                     <h2><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h2>
-                    <p>{{ listing.description }}</p>
+                    <!-- <p>{{ listing.description }}</p> -->
                     <p>Current Price: ${{ listing.current_bid }}</p>
                     {% if listing.image_url %}
-                        <img src="{{ listing.image_url }}" alt="Image for {{ listing.title }}">
+                        <!-- <img src="{{ listing.image_url }}" alt="Image for {{ listing.title }}"> -->
                     {% endif %}
                 </div>
             {% endfor %}
